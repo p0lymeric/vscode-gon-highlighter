@@ -1,0 +1,306 @@
+{
+    "information_for_contributors": [
+        "polymeric 2026. MIT License.",
+        "Based off VS Code's JSONC TextMate grammar. Copyright (c) 2015 - present Microsoft Corporation. MIT License.",
+        "https://github.com/TylerGlaiel/GON",
+        "https://github.com/microsoft/vscode/blob/80cf9e47b373d416c1a9fef061caabe8bfd598b5/extensions/json/syntaxes/JSONC.tmLanguage.json",
+        "https://github.com/microsoft/vscode/blob/d188e2d1096bc4c9251c5d293d013e12e44ffc48/extensions/yaml/syntaxes/yaml-1.1.tmLanguage.json",
+        "https://github.com/microsoft/vscode/blob/5ebbe53282bd1d5d3453405d9e6a34ee2eb7f42d/extensions/cpp/syntaxes/c.tmLanguage.json",
+        "https://macromates.com/manual/en/language_grammars"
+    ],
+    "version": "1.0.0",
+    "name": "GON (Glaiel Object Notation)",
+    "scopeName": "source.gon",
+    "patterns": [
+        {
+            "include": "#preprocessor"
+        },
+        {
+            "include": "#keyvalue"
+        }
+    ],
+    "repository": {
+        "preprocessor_include": {
+            "begin": "((#)(include))\\b\\s*",
+            "beginCaptures": {
+                "1": {
+                    "name": "keyword.control.directive.gon"
+                },
+                "2": {
+                    "name": "punctuation.definition.directive.include.gon"
+                }
+            },
+            "end": "(?=\\s|$)",
+            "name": "meta.preprocessor.include.gon",
+            "patterns": [
+                {
+                    "begin": "\"",
+                    "beginCaptures": {
+                        "0": {
+                            "name": "punctuation.definition.string.begin.gon"
+                        }
+                    },
+                    "end": "\"",
+                    "endCaptures": {
+                        "0": {
+                            "name": "punctuation.definition.string.end.gon"
+                        }
+                    },
+                    "name": "string.quoted.double.include.gon"
+                },
+                {
+                    "match": "[^\\s\"]+",
+                    "name": "string.unquoted.include-path.gon"
+                }
+            ]
+        },
+        "preprocessor_comment": {
+            "patterns": [
+                {
+                    "begin": "/\\*",
+                    "captures": {
+                        "0": {
+                            "name": "punctuation.definition.comment.gon"
+                        }
+                    },
+                    "end": "\\*/",
+                    "name": "comment.block.gon"
+                },
+                {
+                    "captures": {
+                        "1": {
+                            "name": "punctuation.definition.comment.gon"
+                        }
+                    },
+                    "match": "(//).*$\\n?",
+                    "name": "comment.line.double-slash.gon"
+                },
+                {
+                    "captures": {
+                        "1": {
+                            "name": "punctuation.definition.comment.gon"
+                        }
+                    },
+                    "match": "(#[ \t]).*$\\n?",
+                    "name": "comment.line.number-sign.gon"
+                }
+            ]
+        },
+        "preprocessor_define": {
+            "begin": "((#)(define))\\b\\s+([^\\s(]+)(?:\\(([^)]*)\\))?",
+            "beginCaptures": {
+                "1": {
+                    "name": "keyword.control.directive.macro.gon"
+                },
+                "2": {
+                    "name": "punctuation.definition.directive.gon"
+                },
+                "4": { "name": "entity.name.function.gon" },
+                "5": {
+                    "name": "variable.parameter.gon",
+                    "patterns": [
+                        { "match": "[^\\s,]+", "name": "variable.parameter.gon" }
+                    ]
+                }
+            },
+            "end": "((#)(end))\\b\\s*",
+            "endCaptures": {
+                "1": {
+                    "name": "keyword.control.directive.end.gon"
+                },
+                "2": {
+                    "name": "punctuation.definition.directive.gon"
+                }
+            },
+            "name": "meta.preprocessor.define.gon",
+            "patterns": [
+                {
+                    "include": "#value"
+                }
+            ]
+        },
+        "preprocessor_macro": {
+            "begin": "((#)((?:[^\\s\\[\\]{}\"#,=:/]|/(?![/*]))+))\\b\\s*",
+            "beginCaptures": {
+                "1": {
+                    "name": "keyword.control.directive.macro.gon"
+                },
+                "2": {
+                    "name": "punctuation.definition.directive.gon"
+                }
+            },
+            "comment": "Here we presume the define will absorb the rest of the line, which disagrees with the real preprocessor.",
+            "comment2": "Since macros take a variable number of arguments, they are difficult to correctly handle with TextMate's grammar descriptions.",
+            "end": "$",
+            "name": "meta.preprocessor.macro.gon",
+            "patterns": [
+                {
+                    "include": "#value"
+                }
+            ]
+        },
+        "constant": {
+            "match": "\\b(?:true|false|null)\\b",
+            "name": "constant.language.gon"
+        },
+        "number": {
+            "comment": "These should be aligned against strtol/strtod's base 0 parsing",
+            "patterns": [
+                {
+                    "match": "[+-]?(?:0[xX][0-9a-fA-F]+|0[0-7]*|[1-9][0-9]*)(?!(?:[^\\s\\[\\]{}\"#,=:/]|/(?![/*])))",
+                    "name": "constant.numeric.gon"
+                },
+                {
+                    "match": "[+-]?(?:[0-9]+\\.?[0-9]*|[0-9]*\\.[0-9]+)(?:[eE][+-]?[0-9]+)?(?!(?:[^\\s\\[\\]{}\"#,=:/]|/(?![/*])))",
+                    "name": "constant.numeric.gon"
+                }
+            ]
+        },
+        "string": {
+            "begin": "\"",
+            "beginCaptures": {
+                "0": {
+                    "name": "punctuation.definition.string.begin.gon"
+                }
+            },
+            "end": "\"",
+            "endCaptures": {
+                "0": {
+                    "name": "punctuation.definition.string.end.gon"
+                }
+            },
+            "name": "string.quoted.double.gon",
+            "patterns": [
+                {
+                    "include": "#stringcontent"
+                }
+            ]
+        },
+        "array": {
+            "begin": "\\[",
+            "beginCaptures": {
+                "0": {
+                    "name": "punctuation.definition.array.begin.gon"
+                }
+            },
+            "end": "\\]",
+            "endCaptures": {
+                "0": {
+                    "name": "punctuation.definition.array.end.gon"
+                }
+            },
+            "name": "meta.structure.array.gon",
+            "patterns": [
+                {
+                    "include": "#value"
+                }
+            ]
+        },
+		"object": {
+			"begin": "\\{",
+			"beginCaptures": {
+				"0": {
+					"name": "punctuation.definition.dictionary.begin.gon"
+				}
+			},
+			"end": "\\}",
+			"endCaptures": {
+				"0": {
+					"name": "punctuation.definition.dictionary.end.gon"
+				}
+			},
+			"name": "meta.structure.dictionary.gon",
+			"patterns": [
+				{
+					"include": "#preprocessor"
+				},
+				{
+					"include": "#keyvalue"
+				}
+			]
+		},
+        "unquoted": {
+            "match": "(?:[^\\s\\[\\]{}\"#,=:/]|/(?![/*]))+",
+            "name": "string.unquoted.plain.gon"
+        },
+
+        "stringcontent": {
+            "patterns": [
+                {
+                    "match": "\\\\n",
+                    "name": "constant.character.escape.gon"
+                },
+                {
+                    "match": "\\\\.",
+                    "name": "constant.character.escape.other.gon"
+                }
+            ]
+        },
+        "keyvalue": {
+            "name": "meta.structure.dictionary.gon",
+            "begin": "(?:(\"(?:[^\"\\\\]|\\\\.)*\")|((?:[^\\s\\[\\]{}\"#,=:/]|/(?![/*]))+))\\s*(?:[=:]\\s*)?",
+            "beginCaptures": {
+                "comment": "support.type.property-name.json is colourized, support.type.property-name.gon is not",
+                "1": {
+                    "name": "string.quoted.double.gon entity.name.tag.gon",
+                    "patterns": [
+                        {
+                            "include": "#stringcontent"
+                        }
+                    ]
+                },
+                "2": {
+                    "name": "string.unquoted.plain.gon entity.name.tag.gon"
+                }
+            },
+            "comment": "Should accept multiple KV pairs on one line, but may have corners.",
+            "end": "(?=[,\\}\\]])|(?=(?:\"(?:[^\"\\\\]|\\\\.)*\"|(?:[^\\s\\[\\]{}\"#,=:/]|/(?![/*]))+)\\s*[=:])|(?<=\\S)(?<!\\*/)(?=[^\\S\\n]+(?:\"(?:[^\"\\\\]|\\\\.)*\"|(?:[^\\s\\[\\]{}\"#,=:/]|/(?![/*]))+))|(?<=\\S)(?<!\\*/)(?!\\s*[\\[{])$",
+            "patterns": [
+                {
+                    "include": "#value"
+                }
+            ]
+        },
+        "preprocessor": {
+            "patterns": [
+                {
+                    "include": "#preprocessor_comment"
+                },
+                {
+                    "include": "#preprocessor_include"
+                },
+                {
+                    "include": "#preprocessor_define"
+                },
+                {
+                    "include": "#preprocessor_macro"
+                }
+            ]
+        },
+        "value": {
+            "patterns": [
+                {
+                    "include": "#preprocessor"
+                },
+                {
+                    "include": "#constant"
+                },
+                {
+                    "include": "#number"
+                },
+                {
+                    "include": "#string"
+                },
+                {
+                    "include": "#array"
+                },
+                {
+                    "include": "#object"
+                },
+                {
+                    "include": "#unquoted"
+                }
+            ]
+        }
+    }
+}

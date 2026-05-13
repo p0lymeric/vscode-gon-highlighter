@@ -1,0 +1,42 @@
+{
+    "name": "vscode-gon-highlighter",
+    "displayName": "%displayName%",
+    "description": "%description%",
+    "icon": "images/icon.png",
+    "version": "1.0.0",
+    "publisher": "polymeric",
+    "license": "MIT",
+    "engines": {
+        "vscode": "*"
+    },
+    "categories": [
+        "Programming Languages"
+    ],
+    "contributes": {
+        "languages": [
+            {
+                "id": "gon",
+                "aliases": [
+                    "GON",
+                    "Glaiel Object Notation",
+                    "gon"
+                ],
+                "extensions": [
+                    ".gon"
+                ],
+                "configuration": "./language-configuration.json"
+            }
+        ],
+        "grammars": [
+            {
+                "language": "gon",
+                "scopeName": "source.gon",
+                "path": "./syntaxes/gon.tmLanguage.json"
+            }
+        ]
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/p0lymeric/vscode-gon-highlighter.git"
+    }
+}
