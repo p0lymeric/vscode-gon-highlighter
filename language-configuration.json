@@ -17,6 +17,11 @@
         [
             "[",
             "]"
+        ],
+        // #define argument list
+        [
+            "(",
+            ")"
         ]
     ],
     "autoClosingPairs": [
@@ -49,10 +54,19 @@
 				"comment"
 			]
 		},
+        // #define argument list
+		{
+			"open": "(",
+			"close": ")",
+			"notIn": [
+                "string"
+			]
+		}
     ],
     "indentationRules": {
-        "increaseIndentPattern": "({+(?=((\\\\.|[^\"\\\\])*\"(\\\\.|[^\"\\\\])*\")*[^\"}]*)$)|(\\[+(?=((\\\\.|[^\"\\\\])*\"(\\\\.|[^\"\\\\])*\")*[^\"\\]]*)$)",
-        "decreaseIndentPattern": "^\\s*[}\\]],?\\s*$"
+        // '{' and '[' and '(' increase indentation
+        "increaseIndentPattern": "^.*(\\{[^}]*|\\([^)]*|\\[[^\\]]*)$",
+        "decreaseIndentPattern": "^\\s*[\\}\\]\\)].*$"
     },
     "onEnterRules": [
         // Add // when pressing enter from inside line comment

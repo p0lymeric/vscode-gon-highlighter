@@ -1,6 +1,6 @@
 ## GON Highlighter
 
-GON Highlighter is a VS Code extension that provides basic highlighting for GON (Glaiel Object Notation) files, used by games that use the Glaiel Game Engine.
+GON Highlighter is a VS Code extension that provides basic highlighting for GON (Glaiel Object Notation) files, used by games built with the Glaiel Game Engine.
 
 It is based off VS Code's basic JSON highlighter, and carries a similar feature set in terms of syntax colouring and bracket/quote/indentation autocompletion.
 
@@ -9,12 +9,11 @@ GON Highlighter may help you read and write GON files by colouring syntax. Unfor
 ![example](images/highlight_example.png)
 
 ### Known limitations
-- Support for preprocessor directives (`#include`, `#define`, etc.) is present but very rough.
-- Bracket and quote autocompletion is functional but awkward, as they are not autocompleted unless the file is largely correct up to the point.
+- Bracket and quote autocompletion may not trigger unless the file is largely correct up to the editing point.
 
 Feedback is highly appreciated. Please file bug reports or suggestions to the project's [GitHub repository](https://github.com/p0lymeric/vscode-gon-highlighter/issues).
 
-## Licensing
+### Licensing
 
 MIT License. See [LICENSE.md](LICENSE.md) for details.
 

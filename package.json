@@ -3,7 +3,7 @@
     "displayName": "%displayName%",
     "description": "%description%",
     "icon": "images/icon.png",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "publisher": "polymeric",
     "license": "MIT",
     "engines": {
@@ -22,7 +22,10 @@
                     "gon"
                 ],
                 "extensions": [
-                    ".gon"
+                    ".gon",
+                    ".gon.append",
+                    ".gon.merge",
+                    ".gon.patch"
                 ],
                 "configuration": "./language-configuration.json"
             }

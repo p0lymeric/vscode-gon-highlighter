@@ -72,7 +72,7 @@
                             "name": "punctuation.definition.comment.gon"
                         }
                     },
-                    "match": "(//).*$\\n?",
+                    "match": "(//).*$",
                     "name": "comment.line.double-slash.gon"
                 },
                 {
@@ -81,7 +81,9 @@
                             "name": "punctuation.definition.comment.gon"
                         }
                     },
-                    "match": "(#[ \t]).*$\\n?",
+                    "comment": "This is actually eaten by the GON parser as a comment, not the preprocessor",
+                    "comment2": "(the # sigil can either be interpreted as a macro use directive or passed through to GON)",
+                    "match": "(#[ \t]).*$",
                     "name": "comment.line.number-sign.gon"
                 }
             ]
@@ -99,11 +101,14 @@
                 "5": {
                     "name": "variable.parameter.gon",
                     "patterns": [
-                        { "match": "[^\\s,]+", "name": "variable.parameter.gon" }
+                        {
+                            "match": "[^\\s,]+",
+                            "name": "variable.parameter.gon"
+                        }
                     ]
                 }
             },
-            "end": "((#)(end))\\b\\s*",
+            "end": "((#)(end))\\b",
             "endCaptures": {
                 "1": {
                     "name": "keyword.control.directive.end.gon"
@@ -120,7 +125,7 @@
             ]
         },
         "preprocessor_macro": {
-            "begin": "((#)((?:[^\\s\\[\\]{}\"#,=:/]|/(?![/*]))+))\\b\\s*",
+            "begin": "((#)((?:[^\\s\\[\\]{}\"#,=:/]|/(?![/*]))+))\\b",
             "beginCaptures": {
                 "1": {
                     "name": "keyword.control.directive.macro.gon"
@@ -144,7 +149,7 @@
             "name": "constant.language.gon"
         },
         "number": {
-            "comment": "These should be aligned against strtol/strtod's base 0 parsing",
+            "comment": "These are aligned against strtol base 0/strtod's parsing",
             "patterns": [
                 {
                     "match": "[+-]?(?:0[xX][0-9a-fA-F]+|0[0-7]*|[1-9][0-9]*)(?!(?:[^\\s\\[\\]{}\"#,=:/]|/(?![/*])))",
@@ -237,10 +242,8 @@
             ]
         },
         "keyvalue": {
-            "name": "meta.structure.dictionary.gon",
-            "begin": "(?:(\"(?:[^\"\\\\]|\\\\.)*\")|((?:[^\\s\\[\\]{}\"#,=:/]|/(?![/*]))+))\\s*(?:[=:]\\s*)?",
+            "begin": "(?:(\"[^\"]*\")|((?:[^\\s\\[\\]{}\"#,=:/]|/(?![/*]))+))((?:\\s*(?://[^\\n]*|/\\*[\\s\\S]*?\\*/))+\\s*|\\s+|[ \\t]*[=:][ \\t]*|(?=[,\\}\\]]|$))",
             "beginCaptures": {
-                "comment": "support.type.property-name.json is colourized, support.type.property-name.gon is not",
                 "1": {
                     "name": "string.quoted.double.gon entity.name.tag.gon",
                     "patterns": [
@@ -251,10 +254,16 @@
                 },
                 "2": {
                     "name": "string.unquoted.plain.gon entity.name.tag.gon"
+                },
+                "3": {
+                    "patterns": [
+                        {
+                            "include": "#preprocessor_comment"
+                        }
+                    ]
                 }
             },
-            "comment": "Should accept multiple KV pairs on one line, but may have corners.",
-            "end": "(?=[,\\}\\]])|(?=(?:\"(?:[^\"\\\\]|\\\\.)*\"|(?:[^\\s\\[\\]{}\"#,=:/]|/(?![/*]))+)\\s*[=:])|(?<=\\S)(?<!\\*/)(?=[^\\S\\n]+(?:\"(?:[^\"\\\\]|\\\\.)*\"|(?:[^\\s\\[\\]{}\"#,=:/]|/(?![/*]))+))|(?<=\\S)(?<!\\*/)(?!\\s*[\\[{])$",
+            "end": "(?<=[\"\\}\\]])|(?<=[^\\s\\[\\]{}\"#,=:])(?<!\\*/)(?=\\s|$|[,\\}\\]]|//|/\\*)",
             "patterns": [
                 {
                     "include": "#value"
