@@ -1,5 +1,7 @@
 ## GON Highlighter
 
+[Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=polymeric.vscode-gon-highlighter) | [Open VSX](https://open-vsx.org/extension/polymeric/vscode-gon-highlighter) | [GitHub Releases](https://github.com/p0lymeric/vscode-gon-highlighter/releases)
+
 GON Highlighter is a VS Code extension that provides basic highlighting for GON (Glaiel Object Notation) files, used by games built with the Glaiel Game Engine.
 
 It is based off VS Code's basic JSON highlighter, and carries a similar feature set in terms of syntax colouring and bracket/quote/indentation autocompletion.

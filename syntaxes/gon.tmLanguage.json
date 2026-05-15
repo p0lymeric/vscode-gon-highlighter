@@ -8,7 +8,7 @@
         "https://github.com/microsoft/vscode/blob/5ebbe53282bd1d5d3453405d9e6a34ee2eb7f42d/extensions/cpp/syntaxes/c.tmLanguage.json",
         "https://macromates.com/manual/en/language_grammars"
     ],
-    "version": "1.0.0",
+    "version": "1.0.2",
     "name": "GON (Glaiel Object Notation)",
     "scopeName": "source.gon",
     "patterns": [
@@ -89,7 +89,9 @@
             ]
         },
         "preprocessor_define": {
-            "begin": "((#)(define))\\b\\s+([^\\s(]+)(?:\\(([^)]*)\\))?",
+            "comment": "Here we presume the name and params list are placed on the same line as the definition.",
+            "comment2": "It's likely difficult, but possible to allow these fragments to span lines with TextMate grammar.",
+            "begin": "((#)(define))\\b\\s+([^\\s(]+)\\s*(?:\\(([^)]*)\\))?",
             "beginCaptures": {
                 "1": {
                     "name": "keyword.control.directive.macro.gon"
@@ -135,7 +137,7 @@
                 }
             },
             "comment": "Here we presume the define will absorb the rest of the line, which disagrees with the real preprocessor.",
-            "comment2": "Since macros take a variable number of arguments, they are difficult to correctly handle with TextMate's grammar descriptions.",
+            "comment2": "Since macros take a variable number of arguments, they are impossible to correctly handle with TextMate's grammar descriptions.",
             "end": "$",
             "name": "meta.preprocessor.macro.gon",
             "patterns": [
@@ -263,6 +265,8 @@
                     ]
                 }
             },
+            "comment": "If a value is a quoted string that spans multiple lines, it will fail to parse correctly.",
+            "comment1": "(keys can span multiple lines by sheer coincidence of being parsed as two keyvalues)",
             "end": "(?<=[\"\\}\\]])|(?<=[^\\s\\[\\]{}\"#,=:])(?<!\\*/)(?=\\s|$|[,\\}\\]]|//|/\\*)",
             "patterns": [
                 {
