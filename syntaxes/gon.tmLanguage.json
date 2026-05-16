@@ -8,7 +8,7 @@
         "https://github.com/microsoft/vscode/blob/5ebbe53282bd1d5d3453405d9e6a34ee2eb7f42d/extensions/cpp/syntaxes/c.tmLanguage.json",
         "https://macromates.com/manual/en/language_grammars"
     ],
-    "version": "1.0.2",
+    "version": "1.0.3",
     "name": "GON (Glaiel Object Notation)",
     "scopeName": "source.gon",
     "patterns": [
@@ -244,7 +244,8 @@
             ]
         },
         "keyvalue": {
-            "begin": "(?:(\"[^\"]*\")|((?:[^\\s\\[\\]{}\"#,=:/]|/(?![/*]))+))((?:\\s*(?://[^\\n]*|/\\*[\\s\\S]*?\\*/))+\\s*|\\s+|[ \\t]*[=:][ \\t]*|(?=[,\\}\\]]|$))",
+            "comment": "FIXME a quoted-unquoted pair with no delimiting space (\"q\"u) is misparsed.",
+            "begin": "(?:(\"[^\"]*\")|((?:[^\\s\\[\\]{}\"#,=:/]|/(?![/*]))+))((?:\\s*(?://[^\\n]*|/\\*[\\s\\S]*?\\*/))+\\s*|\\s+|[ \\t]*[=:][ \\t]*|(?=[\\[\\{\",\\}\\]]|$))",
             "beginCaptures": {
                 "1": {
                     "name": "string.quoted.double.gon entity.name.tag.gon",
@@ -265,8 +266,8 @@
                     ]
                 }
             },
-            "comment": "If a value is a quoted string that spans multiple lines, it will fail to parse correctly.",
-            "comment1": "(keys can span multiple lines by sheer coincidence of being parsed as two keyvalues)",
+            "comment2": "If a value is a quoted string that spans multiple lines, it will fail to parse correctly.",
+            "comment3": "(keys can span multiple lines by sheer coincidence of being parsed as two keyvalues)",
             "end": "(?<=[\"\\}\\]])|(?<=[^\\s\\[\\]{}\"#,=:])(?<!\\*/)(?=\\s|$|[,\\}\\]]|//|/\\*)",
             "patterns": [
                 {

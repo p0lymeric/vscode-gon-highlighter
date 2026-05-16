@@ -3,7 +3,7 @@
     "displayName": "%displayName%",
     "description": "%description%",
     "icon": "images/icon.png",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "publisher": "polymeric",
     "license": "MIT",
     "engines": {
