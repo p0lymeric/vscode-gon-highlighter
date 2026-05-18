@@ -7,11 +7,16 @@
 ```
 git tag -a vx.x.x -m "x.x.x release"
 ```
-5. Generate the `vsix` archive.
+5. Clean the local build tree.
 ```
+npm run clean
+```
+6. Pull NPM dependencies, build, and generate the `vsix` archive.
+```
+npm install
 vsce package
 ```
-6. Review release candidate locally.
+7. Review release candidate locally.
 
 ### Submission
 1. Push to `origin/master`.

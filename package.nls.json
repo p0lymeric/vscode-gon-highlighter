@@ -1,4 +1,7 @@
 {
     "displayName": "GON Highlighter",
-    "description": "Basic syntax highlighting for GON (Glaiel Object Notation) files."
+    "description": "Language support for GON (Glaiel Object Notation) files.",
+    "configuration.gonHighlighter.enable.description": "Enable the GON language server. Requires a window reload to take effect.",
+    "configuration.gonHighlighter.enableDiagnostics.description": "Enable GON syntax error diagnostics (uses the language server).",
+    "configuration.gonHighlighter.enableOutline.description": "Enable populating GON document outlines (uses the language server)."
 }

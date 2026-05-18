@@ -203,29 +203,29 @@
                 }
             ]
         },
-		"object": {
-			"begin": "\\{",
-			"beginCaptures": {
-				"0": {
-					"name": "punctuation.definition.dictionary.begin.gon"
-				}
-			},
-			"end": "\\}",
-			"endCaptures": {
-				"0": {
-					"name": "punctuation.definition.dictionary.end.gon"
-				}
-			},
-			"name": "meta.structure.dictionary.gon",
-			"patterns": [
-				{
-					"include": "#preprocessor"
-				},
-				{
-					"include": "#keyvalue"
-				}
-			]
-		},
+        "object": {
+            "begin": "\\{",
+            "beginCaptures": {
+                "0": {
+                    "name": "punctuation.definition.dictionary.begin.gon"
+                }
+            },
+            "end": "\\}",
+            "endCaptures": {
+                "0": {
+                    "name": "punctuation.definition.dictionary.end.gon"
+                }
+            },
+            "name": "meta.structure.dictionary.gon",
+            "patterns": [
+                {
+                    "include": "#preprocessor"
+                },
+                {
+                    "include": "#keyvalue"
+                }
+            ]
+        },
         "unquoted": {
             "match": "(?:[^\\s\\[\\]{}\"#,=:/]|/(?![/*]))+",
             "name": "string.unquoted.plain.gon"

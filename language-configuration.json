@@ -47,21 +47,21 @@
                 "comment"
             ]
         },
-		{
-			"open": "/*",
-			"close": "*/",
-			"notIn": [
-				"comment"
-			]
-		},
+        {
+            "open": "/*",
+            "close": "*/",
+            "notIn": [
+                "comment"
+            ]
+        },
         // #define argument list
-		{
-			"open": "(",
-			"close": ")",
-			"notIn": [
+        {
+            "open": "(",
+            "close": ")",
+            "notIn": [
                 "string"
-			]
-		}
+            ]
+        }
     ],
     "indentationRules": {
         // '{' and '[' and '(' increase indentation
