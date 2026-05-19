@@ -1,4 +1,4 @@
-// GON LSP implementation, client
+// GON LSP implementation, client (desktop)
 //
 // polymeric 2026
 
@@ -43,7 +43,7 @@ export function activate(context: ExtensionContext) {
     }
 
     const serverModule = context.asAbsolutePath(
-        path.join('dist', 'server.js')
+        path.join('dist', 'server.main.js')
     );
 
     const serverOptions: ServerOptions = {

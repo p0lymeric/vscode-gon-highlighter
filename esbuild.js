@@ -5,9 +5,9 @@ const esbuild = require('esbuild');
 const production = process.argv.includes('--production');
 const watch = process.argv.includes('--watch');
 
-async function main() {
+async function buildMain() {
     const ctx = await esbuild.context({
-        entryPoints: ['src/extension.ts', 'src/server.ts'],
+        entryPoints: ['src/extension.main.ts', 'src/server.main.ts'],
         bundle: true,
         format: 'cjs',
         minify: production,
@@ -28,6 +28,35 @@ async function main() {
         await ctx.rebuild();
         await ctx.dispose();
     }
+}
+
+async function buildBrowser() {
+    const ctx = await esbuild.context({
+        entryPoints: ['src/extension.browser.ts', 'src/server.browser.ts'],
+        bundle: true,
+        format: 'cjs',
+        minify: production,
+        sourcemap: !production,
+        sourcesContent: false,
+        platform: 'browser',
+        outdir: 'dist/',
+        external: ['vscode'],
+        logLevel: 'warning',
+        plugins: [
+            /* add to the end of plugins array */
+            esbuildProblemMatcherPlugin
+        ]
+    });
+    if (watch) {
+        await ctx.watch();
+    } else {
+        await ctx.rebuild();
+        await ctx.dispose();
+    }
+}
+
+async function main() {
+    await Promise.all([buildMain(), buildBrowser()]);
 }
 
 /**

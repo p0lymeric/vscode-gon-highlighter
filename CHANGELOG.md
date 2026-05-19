@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.0.1] - 2026-05-18
+Version 2.0.1 adds support for installing GON Highlighter in VS Code for the Web.
+
+- Add browser extension support for the LSP client and server, enabling use on VS Code for the Web hosts, like [vscode.dev](https://vscode.dev) and [github.dev](https://github.dev).
+
 ## [2.0.0] - 2026-05-18
 Version 2.0.0 adds a Typescript-based language server to GON Highlighter.
 
