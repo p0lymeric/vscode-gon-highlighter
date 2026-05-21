@@ -21,30 +21,55 @@ export interface Token {
     size: number;
 }
 
+enum LexerDefineBlockState {
+    Outside,
+    PreFirstBodyWord,
+    PostFirstBodyWord
+}
+
 export function lex(doc: string): Token[] {
     let tokens: Token[] = [];
     let i = 0;
 
+    let db_state: LexerDefineBlockState = LexerDefineBlockState.Outside;
+
     while(i < doc.length) {
-        // Single capture tokens
+        // Single capture tokens: Whitespace-like
         switch(doc[i]) {
-            // IsWhitespace
+            // IsWhitespace/ppIsWhitespace
             case ' ': i++; continue;
             case '\n': i++; continue;
             case '\r': i++; continue;
             case '\t': i++; continue;
-            // IsIgnored
+            // IsSymbol/IsIgnoredSymbol//ppIsPunc
             case '=': tokens.push({ kind: TokenKind.LitEqual, offset: i, size: 1 }); i++; continue;
             case ',': tokens.push({ kind: TokenKind.LitComma, offset: i, size: 1 }); i++; continue;
             case ':': tokens.push({ kind: TokenKind.LitColon, offset: i, size: 1 }); i++; continue;
-            // Others
+            default:
+        }
+
+        // Single capture tokens: Object/array boundary markers.
+        // Technically need some lookahead to determine whether these should be lexed as unquoteds
+        // or as literals, but such edge cases look unnatural enough (e.g. "{ {}" -> KeyValue("{" {})
+        // that we lex them as literals and flag errors in the parser).
+        switch(doc[i]) {
+            // IsSymbol/ppIsPunc
             case '[': tokens.push({ kind: TokenKind.LitLSquare, offset: i, size: 1 }); i++; continue;
             case ']': tokens.push({ kind: TokenKind.LitRSquare, offset: i, size: 1 }); i++; continue;
             case '{': tokens.push({ kind: TokenKind.LitLCurly, offset: i, size: 1 }); i++; continue;
             case '}': tokens.push({ kind: TokenKind.LitRCurly, offset: i, size: 1 }); i++; continue;
-            case '(': tokens.push({ kind: TokenKind.LitLParen, offset: i, size: 1 }); i++; continue;
-            case ')': tokens.push({ kind: TokenKind.LitRParen, offset: i, size: 1 }); i++; continue;
             default:
+        }
+
+        // Single capture tokens: #define argument list boundary markers
+        // Only tokenized as literals in a #define block before the first body word.
+        if(db_state == LexerDefineBlockState.PreFirstBodyWord) {
+            switch(doc[i]) {
+                // ppIsPunc parentheses
+                case '(': tokens.push({ kind: TokenKind.LitLParen, offset: i, size: 1 }); i++; continue;
+                case ')': tokens.push({ kind: TokenKind.LitRParen, offset: i, size: 1 }); i++; continue;
+                default:
+            }
         }
 
         // Single line comment (preprocessor)
@@ -92,10 +117,11 @@ export function lex(doc: string): Token[] {
 
             // If there is no whitespace, treat the hash as a preprocessor sigil
             // Collect the next word (go directly to jail; do not pass go)
-            // NB This disagrees with the reference parser, as GON comments and preprocessor directives
-            // share the # sigil and anything that fails to parse as a macro becomes a GON comment.
+            // NB Technically anything that fails to parse as a macro becomes a GON comment.
+            // We specifically extract the hash-whitespace sequence in our lexer.
             const word_start = i;
             while(i < doc.length) {
+                // ppIsPunc
                 if(' \n\r\t()[]{}=,:"#'.includes(doc[i])) {
                     break;
                 }
@@ -112,15 +138,17 @@ export function lex(doc: string): Token[] {
                     tokens.push({ kind: TokenKind.PreprocLitWordInclude, offset: offset_start, size: i - offset_start });
                 } else if(word === 'define') {
                     tokens.push({ kind: TokenKind.PreprocLitWordDefine, offset: offset_start, size: i - offset_start });
+                    db_state = LexerDefineBlockState.PreFirstBodyWord;
                 } else if(word === 'end') {
                     tokens.push({ kind: TokenKind.PreprocLitWordEnd, offset: offset_start, size: i - offset_start });
+                    db_state = LexerDefineBlockState.Outside;
                 } else {
                     tokens.push({ kind: TokenKind.PreprocWord, offset: offset_start, size: i - offset_start });
                     // If the token is a PreprocWord, consume the rest of the line as a MetaRestOfLine
                     // NB This disagrees with the reference parser, as we don't perform a pre-pass
                     // to actually count how many tokens to group with the macro invocation.
-                    // We simply eat the rest of the line, which reduces complications when parsing TEIN GON documents,
-                    // as they make heavy use of GON comments without a space after the sigil.
+                    // We eat the rest of the line, which reduces complications when parsing TEIN GON documents,
+                    // as they make heavy use of hash comments without a space after the sigil.
                     const rest_start = i;
                     while(i < doc.length && doc[i] != '\n') {
                         i++;
@@ -166,8 +194,16 @@ export function lex(doc: string): Token[] {
         {
             const offset_start = i;
             while(i < doc.length) {
-                if(' \n\r\t()[]{}=,:"#'.includes(doc[i])) {
-                    break;
+                if(db_state == LexerDefineBlockState.PreFirstBodyWord) {
+                    // Preprocessor is sensitive to "()" (ppIsPunc)
+                    if(' \n\r\t()[]{}=,:"#'.includes(doc[i])) {
+                        break;
+                    }
+                } else {
+                    // GON will group parentheses with unquoted strings (IsSymbol)
+                    if(' \n\r\t[]{}=,:"#'.includes(doc[i])) {
+                        break;
+                    }
                 }
                 if(doc[i] == '/' && (doc[i + 1] == '/' || doc[i + 1] == '*')) {
                     break;
@@ -176,6 +212,9 @@ export function lex(doc: string): Token[] {
             }
             if(i > offset_start) {
                 tokens.push({ kind: TokenKind.Unquoted, offset: offset_start, size: i - offset_start });
+                if(db_state == LexerDefineBlockState.PreFirstBodyWord) {
+                    db_state = LexerDefineBlockState.PostFirstBodyWord;
+                }
                 continue;
             }
         }

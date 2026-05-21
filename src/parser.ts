@@ -81,8 +81,13 @@ export function parse(tokens: Token[], text: string): CstNode[] {
                 if (
                     // strtol base 0
                     /^[+-]?(?:0[xX][0-9a-fA-F]+|0[0-7]*|[1-9][0-9]*)$/.test(slice) ||
-                    // strtod
-                    /^[+-]?(?:[0-9]+\.?[0-9]*|[0-9]*\.[0-9]+)(?:[eE][+-]?[0-9]+)?$/.test(slice)
+                    // strtod decimals
+                    /^[+-]?(?:[0-9]+\.?[0-9]*|[0-9]*\.[0-9]+)(?:[eE][+-]?[0-9]+)?$/.test(slice) ||
+                    // strtod heximals
+                    /^[+-]?0[xX](?:[0-9a-fA-F]+\.?[0-9a-fA-F]*|[0-9a-fA-F]*\.[0-9a-fA-F]+)(?:[pP][+-]?[0-9]+)?$/.test(slice) ||
+                    // strtod special words
+                    // fun fact: MSVC's strtod accepts POSIX-style "NAN(" <alphanumeric> ")" sequences, so now we do too
+                    /^[+-]?(?:infinity|inf|nan(?:\([0-9a-zA-Z_]*\))?)$/i.test(slice)
                 ) {
                     return { kind: "number", token };
                 }

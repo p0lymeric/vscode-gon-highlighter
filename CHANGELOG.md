@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.0.2] - 2026-05-20
+Version 2.0.2 is a niche update that improves parsing for floating point numbers and parentheses.
+
+- Add support for colouring the full set of strings that strtod accepts as numbers (hex floats, `nan`, `nan(...)`, `infinity`, `inf`).
+- Align the language server lexer to treat parentheses as non-literals outside of a `#define` context (only `#define` treats parentheses specially).
+
 ## [2.0.1] - 2026-05-18
 Version 2.0.1 adds support for installing GON Highlighter in VS Code for the Web.
 

@@ -8,7 +8,7 @@
         "https://github.com/microsoft/vscode/blob/5ebbe53282bd1d5d3453405d9e6a34ee2eb7f42d/extensions/cpp/syntaxes/c.tmLanguage.json",
         "https://macromates.com/manual/en/language_grammars"
     ],
-    "version": "2.0.1",
+    "version": "2.0.2",
     "name": "GON (Glaiel Object Notation)",
     "scopeName": "source.gon",
     "patterns": [
@@ -159,6 +159,14 @@
                 },
                 {
                     "match": "[+-]?(?:[0-9]+\\.?[0-9]*|[0-9]*\\.[0-9]+)(?:[eE][+-]?[0-9]+)?(?!(?:[^\\s\\[\\]{}\"#,=:/]|/(?![/*])))",
+                    "name": "constant.numeric.gon"
+                },
+                {
+                    "match": "[+-]?0[xX](?:[0-9a-fA-F]+\\.?[0-9a-fA-F]*|[0-9a-fA-F]*\\.[0-9a-fA-F]+)(?:[pP][+-]?[0-9]+)?(?!(?:[^\\s\\[\\]{}\"#,=:/]|/(?![/*])))",
+                    "name": "constant.numeric.gon"
+                },
+                {
+                    "match": "(?i)[+-]?(?:infinity|inf|nan(?:\\([0-9a-zA-Z_]*\\))?)(?!(?:[^\\s\\[\\]{}\"#,=:/]|/(?![/*])))",
                     "name": "constant.numeric.gon"
                 }
             ]
