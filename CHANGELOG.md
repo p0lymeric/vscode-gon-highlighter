@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.0.3] - 2026-05-xx
+Version 2.0.3 ...
+
+- Add an `Unterminated '/*' comment` check.
+- Extend diagnostics inside keyless objects and arrays.
+
 ## [2.0.2] - 2026-05-20
 Version 2.0.2 is a niche update that improves parsing for floating point numbers and parentheses.
 

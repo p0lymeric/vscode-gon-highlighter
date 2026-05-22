@@ -8,7 +8,7 @@
         "https://github.com/microsoft/vscode/blob/5ebbe53282bd1d5d3453405d9e6a34ee2eb7f42d/extensions/cpp/syntaxes/c.tmLanguage.json",
         "https://macromates.com/manual/en/language_grammars"
     ],
-    "version": "2.0.2",
+    "version": "2.0.3",
     "name": "GON (Glaiel Object Notation)",
     "scopeName": "source.gon",
     "patterns": [

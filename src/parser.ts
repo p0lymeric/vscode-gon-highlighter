@@ -2,6 +2,7 @@
 //
 // polymeric 2026
 
+import { DiagSeverity, Diag } from './diag';
 import { Token, TokenKind } from './lexer';
 
 export type CstNode =
@@ -17,15 +18,20 @@ export type CstNode =
     | { kind: "number", token: Token }
     | { kind: "array", left: Token, elements: CstNode[], right: Token | null }
     | { kind: "object", left: Token, elements: CstNode[], right: Token | null }
-    | { kind: "meta_error", token: Token, error_message: string }
+    | { kind: "meta_bad", token: Token }
 ;
 
 export type CstNodeDocument = Extract<CstNode, { kind: "pp_include" | "pp_define" | "pp_macro" | "key_value" }>;
-export type CstNodeValue = Extract<CstNode, { kind: "pp_include" | "pp_macro" | "quoted" | "unquoted" | "bool" | "null" | "number" | "array" | "object" | "meta_error" }>;
+export type CstNodeValue = Extract<CstNode, { kind: "pp_include" | "pp_macro" | "quoted" | "unquoted" | "bool" | "null" | "number" | "array" | "object" | "meta_bad" }>;
 
-export function parse(tokens: Token[], text: string): CstNode[] {
+export function parse(tokens: Token[], text: string): { cst: CstNode[], diags: Diag[] } {
     let nodes: CstNode[] = [];
+    let diags: Diag[] = [];
     let i = 0;
+
+    function error(token: Token, message: string): void {
+        diags.push({ severity: DiagSeverity.Error, offset: token.offset, size: token.size, message });
+    }
 
     function peek(): Token {
         return tokens[i];
@@ -55,6 +61,9 @@ export function parse(tokens: Token[], text: string): CstNode[] {
         const word = consume(); // PreprocLitWordInclude
         skip_ignored();
         const path = at(TokenKind.Quoted, TokenKind.Unquoted) ? consume() : null;
+        if (!path) {
+            error(word, "Expected file path after '#include'");
+        }
         return { kind: "pp_include", word, path };
     }
 
@@ -68,7 +77,6 @@ export function parse(tokens: Token[], text: string): CstNode[] {
         skip_ignored();
         switch(peek().kind) {
             case TokenKind.Quoted: return { kind: "quoted", token: consume() };
-            case TokenKind.MetaUnterminatedQuoted: return { kind: "meta_error", token: consume(), error_message: "Unterminated string" };
             case TokenKind.Unquoted: {
                 const token = consume();
                 const slice = text.slice(token.offset, token.offset + token.size);
@@ -97,7 +105,11 @@ export function parse(tokens: Token[], text: string): CstNode[] {
             case TokenKind.PreprocLitWordInclude: return parse_pp_include();
             case TokenKind.LitLSquare: return parse_array();
             case TokenKind.LitLCurly: return parse_object();
-            default: return { kind: "meta_error", token: consume(), error_message: "Expected a value" };
+            default: {
+                const token = consume();
+                error(token, "Expected a value");
+                return { kind: "meta_bad", token };
+            }
         }
     }
 
@@ -119,6 +131,9 @@ export function parse(tokens: Token[], text: string): CstNode[] {
             elements.push(parse_value());
         }
         const right = eat(TokenKind.LitRSquare);
+        if (!right) {
+            error(left, "Unclosed '[': no matching ']'");
+        }
         return { kind: "array", left, elements, right };
     }
 
@@ -135,6 +150,9 @@ export function parse(tokens: Token[], text: string): CstNode[] {
             elements.push(parse_document_node());
         }
         const right = eat(TokenKind.LitRCurly);
+        if (!right) {
+            error(left, "Unclosed '{': no matching '}'");
+        }
         return { kind: "object", left, elements, right };
     }
 
@@ -142,6 +160,9 @@ export function parse(tokens: Token[], text: string): CstNode[] {
         const word = consume(); // PreprocLitWordDefine
         skip_ignored();
         const name = at(TokenKind.Unquoted) ? consume() : null;
+        if (!name) {
+            error(word, "Expected macro name after '#define'");
+        }
         const params: Token[] = [];
         if(eat(TokenKind.LitLParen)) {
             while(at(TokenKind.Unquoted)) {
@@ -159,6 +180,9 @@ export function parse(tokens: Token[], text: string): CstNode[] {
             body.push(parse_value());
         }
         const end_word = eat(TokenKind.PreprocLitWordEnd);
+        if (!end_word) {
+            error(word, "'#define' without matching '#end'");
+        }
         return { kind: "pp_define", word, name, params, body, end_word };
     }
 
@@ -174,32 +198,43 @@ export function parse(tokens: Token[], text: string): CstNode[] {
             return parse_pp_macro();
         }
         if(at(TokenKind.PreprocLitWordEnd)) {
-            return { kind: "meta_error", token: consume(), error_message: "'#end' without matching '#define'" };
-        }
-        if(at(TokenKind.MetaUnterminatedQuoted)) {
-            return { kind: "meta_error", token: consume(), error_message: "Unterminated string" };
+            const token = consume();
+            error(token, "'#end' without matching '#define'");
+            return { kind: "meta_bad", token };
         }
         if(at(TokenKind.Quoted, TokenKind.Unquoted)) {
             const key = consume();
             skip_ignored();
-            const value: CstNode = at(TokenKind.Quoted, TokenKind.Unquoted, TokenKind.LitLSquare, TokenKind.LitLCurly, TokenKind.PreprocWord, TokenKind.PreprocLitWordInclude)
-                ? parse_value()
-                : { kind: "meta_error", token: key, error_message: "Key has no value" };
+            let value: CstNode;
+            if (at(TokenKind.Quoted, TokenKind.Unquoted, TokenKind.LitLSquare, TokenKind.LitLCurly, TokenKind.PreprocWord, TokenKind.PreprocLitWordInclude)) {
+                value = parse_value();
+            } else {
+                error(key, "Key has no value");
+                value = { kind: "meta_bad", token: key };
+            }
             return { kind: "key_value", key, value };
         }
         if(at(TokenKind.LitLSquare, TokenKind.LitLCurly)) {
             const token = peek();
-            // eat the value but don't graft it onto the CST
-            parse_value();
-            return { kind: "meta_error", token: token, error_message: "Expected key before value" };
+            const value = parse_value();
+            error(token, "Expected key before value");
+            return value;
         }
         if(at(TokenKind.LitRSquare)) {
-            return { kind: "meta_error", token: consume(), error_message: "Unexpected ']': no matching '['" };
+            const token = consume();
+            error(token, "Unexpected ']': no matching '['");
+            return { kind: "meta_bad", token };
         }
         if(at(TokenKind.LitRCurly)) {
-            return { kind: "meta_error", token: consume(), error_message: "Unexpected '}': no matching '{'" };
+            const token = consume();
+            error(token, "Unexpected '}': no matching '}'");
+            return { kind: "meta_bad", token };
         }
-        return { kind: "meta_error", token: consume(), error_message: "Unexpected token" };
+        {
+            const token = consume();
+            error(token, "Unexpected token");
+            return { kind: "meta_bad", token };
+        }
     }
 
     while(!at(TokenKind.MetaEof)) {
@@ -209,5 +244,5 @@ export function parse(tokens: Token[], text: string): CstNode[] {
         nodes.push(parse_document_node());
     }
 
-    return nodes;
+    return { cst: nodes, diags };
 }

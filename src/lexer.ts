@@ -2,6 +2,8 @@
 //
 // polymeric 2026
 
+import { DiagSeverity, Diag } from './diag';
+
 export enum TokenKind {
     LitEqual, LitComma, LitColon,
     LitLSquare, LitRSquare,
@@ -12,7 +14,7 @@ export enum TokenKind {
     PreprocWord,
     GonHashComment,
     Quoted, Unquoted,
-    MetaRestOfLine, MetaEof, MetaUnexpectedChar, MetaUnterminatedQuoted
+    MetaRestOfLine, MetaEof, MetaUnexpectedChar
 }
 
 export interface Token {
@@ -27,8 +29,10 @@ enum LexerDefineBlockState {
     PostFirstBodyWord
 }
 
-export function lex(doc: string): Token[] {
+export function lex(doc: string): { tokens: Token[], diags: Diag[] } {
     let tokens: Token[] = [];
+    let diags: Diag[] = [];
+
     let i = 0;
 
     let db_state: LexerDefineBlockState = LexerDefineBlockState.Outside;
@@ -86,13 +90,17 @@ export function lex(doc: string): Token[] {
         if(doc.slice(i, i + 2) == "/*") {
             const offset_start = i;
             i += 2;
+            let terminated = false;
             while(i < doc.length) {
                 if(doc.slice(i, i + 2) == "*/") {
                     i += 2;
+                    terminated = true;
                     break;
                 }
                 i++;
-                // TODO detect unterminated comment?
+            }
+            if (!terminated) {
+                diags.push({ severity: DiagSeverity.Error, offset: offset_start, size: 2, message: "Unterminated '/*' comment" });
             }
             tokens.push({ kind: TokenKind.PreprocSlashStarComment, offset: offset_start, size: i - offset_start });
             continue;
@@ -176,17 +184,18 @@ export function lex(doc: string): Token[] {
                     break;
                 } else if(doc[i] == '\n') {
                     // NB GON parses quoted strings that span multiple lines, but it's almost certainly
-                    // not useful because the preprocessor will insert extra line breaks per line break.
-                    // To prevent unclosed strings from eating the rest of the document, we
-                    // force the string closed at the newline (not consuming it) and emit
-                    // MetaUnterminatedQuoted so the server can report a diagnostic.
+                    // not useful because the preprocessor inserts extra line breaks per line break.
+                    // We prematurely force a string closed at a newline and flag a lexer error.
                     break;
                 } else {
                     i++;
                 }
+                // If we encounter EOF, the string is also unterminated.
             }
-            // If we encounter EOF, the string is also unterminated.
-            tokens.push({ kind: terminated ? TokenKind.Quoted : TokenKind.MetaUnterminatedQuoted, offset: offset_start, size: i - offset_start });
+            if (!terminated) {
+                diags.push({ severity: DiagSeverity.Error, offset: offset_start, size: 1, message: "Unterminated string" });
+            }
+            tokens.push({ kind: TokenKind.Quoted, offset: offset_start, size: i - offset_start });
             continue;
         }
 
@@ -224,5 +233,5 @@ export function lex(doc: string): Token[] {
     }
 
     tokens.push({ kind: TokenKind.MetaEof, offset: i, size: 0 });
-    return tokens;
+    return { tokens, diags };
 }

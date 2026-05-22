@@ -4,6 +4,7 @@
 
 // Based off boilerplate from https://code.visualstudio.com/api/language-extensions/language-server-extension-guide
 
+import { DiagSeverity, Diag } from './diag';
 import { lex, Token } from './lexer';
 import { parse, CstNode } from './parser';
 
@@ -76,6 +77,8 @@ export function startServer(connection: Connection, documents: TextDocuments<Tex
     interface ParseCache {
         version: number;
         cst: CstNode[];
+        lexer_diags: Diag[];
+        parser_diags: Diag[];
         text: string;
     }
 
@@ -87,8 +90,9 @@ export function startServer(connection: Connection, documents: TextDocuments<Tex
             return cached;
         } else {
             const text = doc.getText();
-            const cst = parse(lex(text), text);
-            const result: ParseCache = { version: doc.version, cst, text };
+            const { tokens, diags: lexer_diags } = lex(text);
+            const { cst, diags: parser_diags } = parse(tokens, text);
+            const result: ParseCache = { version: doc.version, cst, lexer_diags, parser_diags, text };
             parseCache.set(doc.uri, result);
             return result;
         }
@@ -114,56 +118,29 @@ export function startServer(connection: Connection, documents: TextDocuments<Tex
         }
     });
 
-    function tokenRange(token: Token, doc: TextDocument): Range {
+    function spanRange(span: { offset: number, size: number }, doc: TextDocument): Range {
         return {
-            start: doc.positionAt(token.offset),
-            end:   doc.positionAt(token.offset + token.size),
+            start: doc.positionAt(span.offset),
+            end: doc.positionAt(span.offset + span.size),
         };
     }
 
-    async function validateDocument({ cst }: ParseCache, doc: TextDocument): Promise<Diagnostic[]> {
-        const out: Diagnostic[] = [];
-
-        function error(token: Token, message: string): void {
-            out.push({ severity: DiagnosticSeverity.Error, range: tokenRange(token, doc), message, source: 'gon' });
+    function severityToDiagnostic(s: DiagSeverity): DiagnosticSeverity {
+        switch (s) {
+            case DiagSeverity.Error: return DiagnosticSeverity.Error;
+            case DiagSeverity.Warning: return DiagnosticSeverity.Warning;
+            case DiagSeverity.Information: return DiagnosticSeverity.Information;
+            case DiagSeverity.Hint: return DiagnosticSeverity.Hint;
         }
+    }
 
-        function walk(node: CstNode): void {
-            switch (node.kind) {
-                case 'meta_error':
-                    error(node.token, node.error_message);
-                    break;
-                case 'key_value':
-                    walk(node.value);
-                    break;
-                case 'array':
-                    if (!node.right) error(node.left, "Unclosed '[': no matching ']'");
-                    node.elements.forEach(walk);
-                    break;
-                case 'object':
-                    if (!node.right) error(node.left, "Unclosed '{': no matching '}'");
-                    node.elements.forEach(walk);
-                    break;
-                case 'pp_include':
-                    if (!node.path) error(node.word, "Expected file path after '#include'");
-                    break;
-                case 'pp_define':
-                    if (!node.name) error(node.word, "Expected macro name after '#define'");
-                    if (!node.end_word) error(node.word, "'#define' without matching '#end'");
-                    node.body.forEach(walk);
-                    break;
-                case 'pp_macro':
-                case 'quoted':
-                case 'unquoted':
-                case 'bool':
-                case 'null':
-                case 'number':
-                    break;
-            }
-        }
-
-        cst.forEach(walk);
-        return out;
+    async function validateDocument({ lexer_diags, parser_diags }: ParseCache, doc: TextDocument): Promise<Diagnostic[]> {
+        return [...lexer_diags, ...parser_diags].map(e => ({
+            severity: severityToDiagnostic(e.severity),
+            range: spanRange(e, doc),
+            message: e.message,
+            source: 'gon'
+        }));
     }
 
     // Document symbols (Outline)
@@ -186,7 +163,7 @@ export function startServer(connection: Connection, documents: TextDocuments<Tex
             case 'bool': return tokenEnd(node.token);
             case 'null': return tokenEnd(node.token);
             case 'number': return tokenEnd(node.token);
-            case 'meta_error': return tokenEnd(node.token);
+            case 'meta_bad': return tokenEnd(node.token);
             case 'pp_macro': return tokenEnd(node.args ?? node.name);
             case 'pp_include': return tokenEnd(node.path ?? node.word);
             case 'key_value': return nodeEndOffset(node.value);
@@ -238,7 +215,7 @@ export function startServer(connection: Connection, documents: TextDocuments<Tex
                 case 'bool': start = node.token.offset; break;
                 case 'null': start = node.token.offset; break;
                 case 'number': start = node.token.offset; break;
-                case 'meta_error': start = node.token.offset; break;
+                case 'meta_bad': start = node.token.offset; break;
                 case 'pp_macro': start = node.name.offset; break;
                 case 'pp_include': start = node.word.offset; break;
                 case 'pp_define': start = node.word.offset; break;
@@ -272,7 +249,7 @@ export function startServer(connection: Connection, documents: TextDocuments<Tex
                             name: keyName(node.key, text),
                             kind: valueSymbolKind(node.value),
                             range: nodeRange(node),
-                            selectionRange: tokenRange(node.key, doc),
+                            selectionRange: spanRange(node.key, doc),
                             children: valueChildren(node.value),
                         });
                         break;
@@ -281,7 +258,7 @@ export function startServer(connection: Connection, documents: TextDocuments<Tex
                             name: node.path ? tokenText(node.path, text) : '#include',
                             kind: SymbolKind.Module,
                             range: nodeRange(node),
-                            selectionRange: tokenRange(node.word, doc),
+                            selectionRange: spanRange(node.word, doc),
                         });
                         break;
                     case 'pp_define':
@@ -289,7 +266,7 @@ export function startServer(connection: Connection, documents: TextDocuments<Tex
                             name: node.name ? tokenText(node.name, text) : '#define',
                             kind: SymbolKind.Function,
                             range: nodeRange(node),
-                            selectionRange: node.name ? tokenRange(node.name, doc) : tokenRange(node.word, doc),
+                            selectionRange: node.name ? spanRange(node.name, doc) : spanRange(node.word, doc),
                             children: walkNodes(node.body),
                         });
                         break;
@@ -298,12 +275,15 @@ export function startServer(connection: Connection, documents: TextDocuments<Tex
                             name: tokenText(node.name, text),
                             kind: SymbolKind.Function,
                             range: nodeRange(node),
-                            selectionRange: tokenRange(node.name, doc),
+                            selectionRange: spanRange(node.name, doc),
                         });
                         break;
-                    case 'meta_error':
+                    case 'meta_bad':
                     case 'quoted':
                     case 'unquoted':
+                    case 'bool':
+                    case 'null':
+                    case 'number':
                     case 'array':
                     case 'object':
                         break;
