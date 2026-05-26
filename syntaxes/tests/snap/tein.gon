@@ -1,0 +1,120 @@
+// Excerpted from data/tilesets.txt
+i1 {
+    tile_graphics Tileretro
+    overlay_graphics Overlaysretro
+    background_graphics bgretrox
+    foreground_graphics none
+    palette 46
+
+    cart_intro_png Denial
+    cart_intro_palette 46
+
+    music [retro/requiem_intro.ogg, retro/requiem_loop.ogg]
+
+    music_volume 1
+    ambience_volume 1
+
+    area_type ironcart
+
+    art_alts [
+        [Player, PlayerRetro][Frog, Frogretro][Floater, RetroGhost][Slug, Slugretro]
+        [SkullFloater, SkullFloaterretro][Gasser, Gasserretro][Splatter, Splatterretro][CheepCheep, cheepretro][Bullet, bulletretro]
+        [SpitterX, SpitterXretro][SpitterY, SpitterYretro][AimSpitter, SpitterZretro][Cannonball, cannonballretro][Fireball, cannonballfireretro]
+        [Hopper, hopperretro][SkullSlug, SkullSlugretro][SkullCrow, SkullCrowretro][ChainChomp, ChainChompretro][ChainLink, ChainLinkretro][ChainLink2, ChainLinkretro]
+        [Mask, Maskretro][Revolver, Revolverretro][GasCloud, GasCloudretro][Cannon,Cannonretro][Cannonstand,Cannonstandretro][Bouncer,Bouncerretro]
+        [ElectroBall, RetroElectroBall][OrbSmall, RetroOrbSmall][OrbLarge, RetroOrbLarge][ChargeSlug, RetroChargerSlug]
+        [Fish, RetroFish][CreepingMass, CreepingMassRetro]
+    ]
+
+}
+
+// Excerpted from data/npcs.txt
+NPCH4 {
+#basic sideways
+    movieclip NPCH4
+    sound_id NPCSteven
+    text [
+        "guh . .\n\nguh . ."
+        "i\nhunger\n. . ."
+        "\n300. . ."
+        "must\nbe\nblood"
+        "must\nbe\nfresh"
+        "\n. . ."
+        "\nfeed me . . ."
+    ]
+
+    alt_text [
+        "\n. . ."
+        "\ngrumble"
+        "\ngrumble"
+        "\n. . ."
+    ]
+}
+
+// Excerpted from data/levelinfo.txt
+"i4-6x" {name="-4-6-" id=-1}
+"1-0" {name="The End 0" id=-1}
+"1-1" {name="The End 1" id=1} #life
+
+// Excerpted from audio/mainsounds.txt
+SoundEffectBaseConstants { #relevant group properties are multiplied by these
+    volume 1
+    pitch 1
+
+    pan_falloff_range [1, 54]
+    volume_falloff_range [10, 60]
+
+    distance_scale [1, 1] # scales x, y distance by following value (so sound spreads farther horizontally than vertically, etc)
+
+    falloff_mode linearsquare
+}
+
+SoundEffectGroups {
+    # Example {                                  # the name of the sound effect trigger for the engine to access (PlaySound("Example"))
+    #    files [file1.wav, file2.wav, file3.wav] # triggering this sound chooses 1 file from here at random
+    #    pitch 5                                 # shortcut for pitch_range [5,5]  (constant pitch)
+    #    volume 5                                # shortcut for volume_range [5,5] (constant volume)
+    #    pitch_range [.8, 1.2]                   # pitch randomized between .8 and 1.2
+    #    volume_range [.8, 1.2]                  # volume randomized between .8 and 1.2
+    #    falloff .5                              # multiplied by volume_falloff_range global setting
+    #    falloff_range [1, 1]                    # same but as a range [.5, 2] with a base settingh of [10, 20] results in a new range of [5, 40]
+    #    pan_falloff .5                          # multiplied by pan_falloff_range global setting (should not need)
+    #    pan_falloff_range [1, 1]                # same but as a range [.5, 2] with a base settingh of [10, 20] results in a new range of [5, 40] (should not need)
+    # }
+
+    #playersounds
+    Jump { #testlevels: anywhere
+        files [Jump-001.wav,Jump-002.wav,Jump-003.wav,Jump-004.wav]
+        volume .65
+        pitch_range [1, 1.2]
+    }
+
+    #environment sounds
+    Rumble {  #testlevels: 1-13, 1-16
+        files [RockRumble_v2-001.wav,RockRumble_v2-002.wav,RockRumble_v2-003.wav,RockRumble_v2-005.wav,RockRumble_v2-006.wav]
+        volume 1.2
+        pitch_range[.8,1.2]
+        falloff .85
+    }
+}
+
+// Excerpted from data/particles.txt
+###############################################
+################################################
+#################################################
+##################################################
+### TRIGGERED PARTICLE EFFECTS AFTER THIS BREAK ###
+##################################################
+#################################################
+################################################
+###############################################
+
+PlayerCollide_Wall {
+    #system properties
+    movieclip soliddrip
+    max_particles 100
+    layer 2
+    livebounds [-30, 84, -30, 62]
+    prewarm 0
+    batched false
+}

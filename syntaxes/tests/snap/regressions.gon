@@ -1,0 +1,41 @@
+// Comments should not interrupt key-value parity
+test {
+    key val // comment
+    key val # comment
+    key val /* comment */
+    key val
+}
+
+test {
+    key val // comment
+    key val # comment
+    key val 
+    key val
+}
+
+// A multiline comment should not break key-value parity
+// when such key-values are on their own line
+key value/* comment
+comment */ key value
+
+// These cases are unit cases to work around a grammar limitation
+// where an intermediate comment between key and value resets parity
+key
+[]
+
+key
+[
+]
+
+key
+{}
+
+key
+{
+}
+
+key
+value
+
+key
+"value"

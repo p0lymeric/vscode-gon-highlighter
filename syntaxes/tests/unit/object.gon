@@ -1,0 +1,39 @@
+// SYNTAX TEST "source.gon" "Objects"
+
+key {
+//  ^ punctuation.definition.dictionary.begin.gon
+    my value
+//  ^^ entity.name.tag.gon
+//     ^^^^^ string.unquoted.plain.gon
+    our value
+//  ^^^ entity.name.tag.gon
+//      ^^^^^ string.unquoted.plain.gon
+}
+// <- punctuation.definition.dictionary.end.gon
+
+key { my value our value }
+//  ^ punctuation.definition.dictionary.begin.gon
+//    ^^ entity.name.tag.gon
+//       ^^^^^ string.unquoted.plain.gon
+//             ^^^ entity.name.tag.gon
+//                 ^^^^^ string.unquoted.plain.gon
+//                       ^ punctuation.definition.dictionary.end.gon
+
+key { // some commentary
+//  ^ punctuation.definition.dictionary.begin.gon
+    my value # eats
+//  ^^ entity.name.tag.gon
+//     ^^^^^ string.unquoted.plain.gon
+    our /* shoots */ value // and leaves
+//  ^^^ entity.name.tag.gon
+//                   ^^^^^ string.unquoted.plain.gon
+}
+// <- punctuation.definition.dictionary.end.gon
+
+key {}
+//  ^ punctuation.definition.dictionary.begin.gon
+//   ^ punctuation.definition.dictionary.end.gon
+
+key{}
+// ^ punctuation.definition.dictionary.begin.gon
+//  ^ punctuation.definition.dictionary.end.gon

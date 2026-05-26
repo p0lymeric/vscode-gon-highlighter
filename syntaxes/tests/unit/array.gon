@@ -1,0 +1,54 @@
+// SYNTAX TEST "source.gon" "Arrays"
+
+key [1 2 3]
+//  ^ punctuation.definition.array.begin.gon
+//  ^^^^^^^ meta.structure.array.gon
+//        ^ punctuation.definition.array.end.gon
+//   ^ constant.numeric.gon
+//     ^ constant.numeric.gon
+//       ^ constant.numeric.gon
+
+key ["a" "b"]
+//  ^ punctuation.definition.array.begin.gon
+//  ^^^^^^^^^ meta.structure.array.gon
+//          ^ punctuation.definition.array.end.gon
+//   ^^^ string.quoted.double.gon
+//       ^^^ string.quoted.double.gon
+
+key []
+//  ^ punctuation.definition.array.begin.gon
+//  ^^ meta.structure.array.gon
+//   ^ punctuation.definition.array.end.gon
+
+key[]
+// ^ punctuation.definition.array.begin.gon
+// ^^ meta.structure.array.gon
+//  ^ punctuation.definition.array.end.gon
+
+key [
+//  ^ punctuation.definition.array.begin.gon
+//  ^ meta.structure.array.gon
+    1
+//  ^ constant.numeric.gon
+//  ^ meta.structure.array.gon
+    "a"
+//  ^^^ string.quoted.double.gon
+//  ^^^ meta.structure.array.gon
+    b
+//  ^ string.unquoted.plain.gon
+//  ^ meta.structure.array.gon
+]
+// <- punctuation.definition.array.end.gon
+// <- meta.structure.array.gon
+
+if_something [
+//           ^ punctuation.definition.array.begin.gon
+//           ^ meta.structure.array.gon
+] else [
+// <- punctuation.definition.array.end.gon
+// <- meta.structure.array.gon
+//     ^ punctuation.definition.array.begin.gon
+//     ^ meta.structure.array.gon
+]
+// <- punctuation.definition.array.end.gon
+// <- meta.structure.array.gon

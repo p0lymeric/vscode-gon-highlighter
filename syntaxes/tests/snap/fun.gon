@@ -1,0 +1,34 @@
+Glaiel Object Notation is "Fun" {
+    so true
+    not false
+    nor null
+
+    a [b c d e f g 1.2 0x1337 1e10 -100 10%]
+
+    why "is it so damn flexible?"
+    good: intentions
+    pave = the
+    road
+    to
+    parsing$hell {
+        #define cursed aaaaa #end
+        text-macros [
+            are #cursed
+        ]
+        and why is #include "even/a/thing"
+        /* comments are good */
+        // we are fans of comments
+        # did you know you can comment like this?
+        #but this could be a macro invocation or comment
+        #define it's(really driving me past the edge)
+            yes really
+        #end
+        #it's hard to disambiguate without real parsing
+
+        I don't know if most of this is # legal GON
+        because I just hacked VS Code's//JSONC syntax
+        colourer to/*colour
+        GON*/ and I "don't" write much GON
+    }
+    It does make text pretty though.
+}

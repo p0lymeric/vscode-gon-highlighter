@@ -21,6 +21,13 @@
     ],
     "repository": {
         "preprocessor_include": {
+            "comment": "Fusion[1] is just a cheap[2] tactic[3] to make weak Gems[4] stronger[5]!",
+            "comment2": "[1] fusing regular expression matchers",
+            "comment3": "[2] suitable for Era 1 computers (~2004), still conventional in Era 2 (~2026)",
+            "comment4": "[3] classy Gems wish to write grammars in an EBNF-like format, but alas, the Diamonds killed R&D on the initiative[6]",
+            "comment5": "[4] sp. Oniguruma, of Ruby fame (though some say her unaugmented powers already extend beyond Type-3 class)",
+            "comment6": "[5] typically from Type-3 to Type-2/1",
+            "comment7": "[6] see: https://github.com/microsoft/vscode/pull/161479",
             "begin": "((#)(include))\\b\\s*",
             "beginCaptures": {
                 "1": {
@@ -67,23 +74,23 @@
                     "name": "comment.block.gon"
                 },
                 {
+                    "match": "(//).*",
                     "captures": {
                         "1": {
                             "name": "punctuation.definition.comment.gon"
                         }
                     },
-                    "match": "(//).*$",
                     "name": "comment.line.double-slash.gon"
                 },
                 {
+                    "match": "(#)#*(?:[ \t].*|$)",
                     "captures": {
                         "1": {
                             "name": "punctuation.definition.comment.gon"
                         }
                     },
-                    "comment": "This is actually eaten by the GON parser as a comment, not the preprocessor",
+                    "comment": "Hash comments are actually eaten by the GON parser, not the preprocessor",
                     "comment2": "(the # sigil can either be interpreted as a macro use directive or passed through to GON)",
-                    "match": "(#[ \t]).*$",
                     "name": "comment.line.number-sign.gon"
                 }
             ]
@@ -91,7 +98,7 @@
         "preprocessor_define": {
             "comment": "Here we presume the name and params list are placed on the same line as the definition.",
             "comment2": "It's likely difficult, but possible to allow these fragments to span lines with TextMate grammar.",
-            "begin": "((#)(define))\\b\\s+([^\\s(]+)\\s*(?:\\(([^)]*)\\))?",
+            "begin": "((#)(define))\\b\\s+([^\\s(]+)\\s*(?:(\\()([^)]*)(\\)))?",
             "beginCaptures": {
                 "1": {
                     "name": "keyword.control.directive.macro.gon"
@@ -100,15 +107,16 @@
                     "name": "punctuation.definition.directive.gon"
                 },
                 "4": { "name": "entity.name.function.gon" },
-                "5": {
-                    "name": "variable.parameter.gon",
+                "5": { "name": "punctuation.section.parameters.begin.bracket.round.gon" },
+                "6": {
                     "patterns": [
                         {
-                            "match": "[^\\s,]+",
+                            "match": "[^\\s,:=\\[\\]{}]+",
                             "name": "variable.parameter.gon"
                         }
                     ]
-                }
+                },
+                "7": { "name": "punctuation.section.parameters.end.bracket.round.gon" }
             },
             "end": "((#)(end))\\b",
             "endCaptures": {
@@ -147,7 +155,7 @@
             ]
         },
         "constant": {
-            "match": "\\b(?:true|false|null)\\b",
+            "match": "(?:true|false|null)(?!(?:[^\\s\\[\\]{}\"#,=:/]|/(?![/*])))",
             "name": "constant.language.gon"
         },
         "number": {
@@ -242,7 +250,7 @@
         "stringcontent": {
             "patterns": [
                 {
-                    "match": "\\\\n",
+                    "match": "\\\\(?:n|\\\\|\")",
                     "name": "constant.character.escape.gon"
                 },
                 {
@@ -252,8 +260,7 @@
             ]
         },
         "keyvalue": {
-            "comment": "FIXME a quoted-unquoted pair with no delimiting space (\"q\"u) is misparsed.",
-            "begin": "(?:(\"[^\"]*\")|((?:[^\\s\\[\\]{}\"#,=:/]|/(?![/*]))+))((?:\\s*(?://[^\\n]*|/\\*[\\s\\S]*?\\*/))+\\s*|\\s+|[ \\t]*[=:][ \\t]*|(?=[\\[\\{\",\\}\\]]|$))",
+            "begin": "(?:(\"[^\"]*\")|((?:[^\\s\\[\\]{}\"#,=:/]|/(?![/*]))+))((?:\\s*(?://[^\\n]*|/\\*[\\s\\S]*?\\*/))+\\s*|\\s+|[ \\t]*[=:][ \\t]*|(?=\\S|$))",
             "beginCaptures": {
                 "1": {
                     "name": "string.quoted.double.gon entity.name.tag.gon",
@@ -276,7 +283,7 @@
             },
             "comment2": "If a value is a quoted string that spans multiple lines, it will fail to parse correctly.",
             "comment3": "(keys can span multiple lines by sheer coincidence of being parsed as two keyvalues)",
-            "end": "(?<=[\"\\}\\]])|(?<=[^\\s\\[\\]{}\"#,=:])(?<!\\*/)(?=\\s|$|[,\\}\\]]|//|/\\*)",
+            "end": "(?<=[\"\\}\\]])(?=\\s|$|[,\\}\\]]|//|/\\*|#)|(?<=[^\\s\\[\\]{}\"#,=:])(?<!\\*/)(?=\\s|$|[,\\}\\]]|//|/\\*)",
             "patterns": [
                 {
                     "include": "#value"

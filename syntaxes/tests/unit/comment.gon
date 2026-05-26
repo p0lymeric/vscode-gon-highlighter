@@ -1,0 +1,65 @@
+// SYNTAX TEST "source.gon" "Comments"
+
+// line comment
+// <-- punctuation.definition.comment.gon
+// <--------------- comment.line.double-slash.gon
+
+//line comment
+// <-- punctuation.definition.comment.gon
+// <-------------- comment.line.double-slash.gon
+
+//
+// <-- punctuation.definition.comment.gon
+// <-- comment.line.double-slash.gon
+
+/* block comment */
+// <-- punctuation.definition.comment.gon
+//               ^^ punctuation.definition.comment.gon
+// <------------------ comment.block.gon
+
+/*block comment*/
+// <-- punctuation.definition.comment.gon
+//             ^^ punctuation.definition.comment.gon
+// <---------------- comment.block.gon
+
+/**/
+// <-- punctuation.definition.comment.gon
+// <~~-- punctuation.definition.comment.gon
+// <---- comment.block.gon
+
+/* block
+// <-- punctuation.definition.comment.gon
+// <-------- comment.block.gon
+comment */
+//      ^^ punctuation.definition.comment.gon
+// <---------- comment.block.gon
+
+/*block
+// <-- punctuation.definition.comment.gon
+// <------- comment.block.gon
+comment*/
+//     ^^ punctuation.definition.comment.gon
+// <--------- comment.block.gon
+
+/*
+// <-- punctuation.definition.comment.gon
+// <-- comment.block.gon
+*/
+// <-- punctuation.definition.comment.gon
+// <-- comment.block.gon
+
+# hash comment
+// <- punctuation.definition.comment.gon
+// <------------ comment.line.number-sign.gon
+
+## hash comment
+// <- punctuation.definition.comment.gon
+// <------------- comment.line.number-sign.gon
+
+#
+// <- punctuation.definition.comment.gon
+// <- comment.line.number-sign.gon
+
+##
+// <- punctuation.definition.comment.gon
+// <-- comment.line.number-sign.gon

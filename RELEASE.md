@@ -17,6 +17,11 @@ npm install
 vsce package
 ```
 7. Review release candidate locally.
+```
+npm run test:unit
+npm run test:snap
+# & other checks as discretion allows
+```
 
 ### Submission
 1. Push to `origin/master`.

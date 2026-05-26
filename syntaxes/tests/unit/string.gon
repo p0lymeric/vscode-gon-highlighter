@@ -1,0 +1,22 @@
+// SYNTAX TEST "source.gon" "Strings"
+
+key "double quoted string"
+//  ^ punctuation.definition.string.begin.gon
+//                       ^ punctuation.definition.string.end.gon
+//  ^^^^^^^^^^^^^^^^^^^^^^ string.quoted.double.gon
+
+key "newline \n"
+//           ^^ constant.character.escape.gon
+//  ^^^^^^^^^^^^ string.quoted.double.gon
+
+key "\\"
+//   ^^ constant.character.escape.gon
+//  ^^^^ string.quoted.double.gon
+
+key "\" double quote"
+//   ^^ constant.character.escape.gon
+//  ^^^^^^^^^^^^^^^^^ string.quoted.double.gon
+
+key "other\!escape"
+//        ^^ constant.character.escape.other.gon
+//  ^^^^^^^^^^^^^^^ string.quoted.double.gon

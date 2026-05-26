@@ -1,0 +1,19 @@
+// SYNTAX TEST "source.gon" "Constants"
+
+key true
+//  ^^^^ constant.language.gon
+
+key false
+//  ^^^^^ constant.language.gon
+
+key null
+//  ^^^^ constant.language.gon
+
+key true/say
+//  ^^^^^^^^ string.unquoted.plain.gon ! constant.language.gon
+
+key thatisfalse
+//  ^^^^^^^^^^^ string.unquoted.plain.gon ! constant.language.gon
+
+key (null)
+//  ^^^^^^ string.unquoted.plain.gon ! constant.language.gon

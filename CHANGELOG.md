@@ -1,10 +1,16 @@
 # Changelog
 
-## [2.0.3] - 2026-05-xx
-Version 2.0.3 ...
+## [2.0.3] - 2026-05-25
+Version 2.0.3 fixes some small highlighting issues and adds some syntax checks.
 
 - Add an `Unterminated '/*' comment` check.
 - Extend diagnostics inside keyless objects and arrays.
+- Fix the following highlight cases.
+    - Colour lines consisting only of hashes (`#`) as comments.
+    - Fix colouring of parentheses and separators in #define blocks.
+    - Fix miscolouring of unquoted strings that contain constant literals, like `true/text`.
+    - Classify `\\` and `\"` as "normal" escaped characters instead of "other" escaped characters.
+    - Fix some key-value abutment cases (`"key"value` and `"key""value"`).
 
 ## [2.0.2] - 2026-05-20
 Version 2.0.2 is a niche update that improves parsing for floating point numbers and parentheses.

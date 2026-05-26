@@ -1,0 +1,31 @@
+// SYNTAX TEST "source.gon" "Numbers"
+
+key 413
+//  ^^^ constant.numeric.gon
+
+key -69
+//  ^^^ constant.numeric.gon
+
+key 1.618
+//  ^^^^^ constant.numeric.gon
+
+key -1.5e10
+//  ^^^^^^^ constant.numeric.gon
+
+key 0xdEaDbEeF
+//  ^^^^^^^^^^ constant.numeric.gon
+
+key -0666
+//  ^^^^^ constant.numeric.gon
+
+key +inf
+//  ^^^^ constant.numeric.gon
+
+key nan
+//  ^^^ constant.numeric.gon
+
+key nan(ind)
+//  ^^^^^^^^ constant.numeric.gon
+
+key 0xdecaf.c0ffeep13453
+//  ^^^^^^^^^^^^^^^^^^^^ constant.numeric.gon

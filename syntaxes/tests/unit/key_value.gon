@@ -1,0 +1,45 @@
+// SYNTAX TEST "source.gon" "Key-value pairs"
+
+key value
+// <--- string.unquoted.plain.gon entity.name.tag.gon
+//  ^^^^^ string.unquoted.plain.gon ! entity.name.tag.gon
+
+key = value
+// <--- string.unquoted.plain.gon entity.name.tag.gon
+//    ^^^^^ string.unquoted.plain.gon ! entity.name.tag.gon
+
+key: value
+// <--- string.unquoted.plain.gon entity.name.tag.gon
+//   ^^^^^ string.unquoted.plain.gon ! entity.name.tag.gon
+
+"key" value
+// <----- string.quoted.double.gon entity.name.tag.gon
+//    ^^^^^ string.unquoted.plain.gon ! entity.name.tag.gon
+
+key "value"
+// <--- string.unquoted.plain.gon entity.name.tag.gon
+//  ^^^^^^ string.quoted.double.gon ! entity.name.tag.gon
+
+key"value"
+// <--- string.unquoted.plain.gon entity.name.tag.gon
+// ^^^^^^ string.quoted.double.gon ! entity.name.tag.gon
+
+key
+// <--- string.unquoted.plain.gon entity.name.tag.gon
+value
+// <----- string.unquoted.plain.gon ! entity.name.tag.gon
+
+key value/* comment
+// <--- string.unquoted.plain.gon entity.name.tag.gon
+//  ^^^^^ string.unquoted.plain.gon ! entity.name.tag.gon
+comment */ key value
+//         ^^^ string.unquoted.plain.gon entity.name.tag.gon
+//             ^^^^^ string.unquoted.plain.gon ! entity.name.tag.gon
+
+"key"value
+// <----- string.quoted.double.gon entity.name.tag.gon
+//   ^^^^^ string.unquoted.plain.gon ! entity.name.tag.gon
+
+"key""value"
+// <----- string.quoted.double.gon entity.name.tag.gon
+//   ^^^^^^ string.quoted.double.gon ! entity.name.tag.gon
