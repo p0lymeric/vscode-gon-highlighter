@@ -1,0 +1,2 @@
+# textmate-grammar-snap appears to require LF line endings for snapshot files
+*.snap text eol=lf
