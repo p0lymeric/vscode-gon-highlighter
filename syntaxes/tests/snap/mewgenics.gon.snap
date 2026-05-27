@@ -6,7 +6,7 @@
 #^ source.gon meta.preprocessor.include.gon keyword.control.directive.gon punctuation.definition.directive.include.gon
 # ^^^^^^^ source.gon meta.preprocessor.include.gon keyword.control.directive.gon
 #        ^ source.gon meta.preprocessor.include.gon
-#         ^^^^^^^^^^^^^^^^^^ source.gon meta.preprocessor.include.gon string.unquoted.include-path.gon
+#         ^^^^^^^^^^^^^^^^^^ source.gon meta.preprocessor.include.gon string.unquoted.include.gon
 >SetName ankylosaurus //
 #^^^^^^^ source.gon string.unquoted.plain.gon entity.name.tag.gon
 #       ^ source.gon

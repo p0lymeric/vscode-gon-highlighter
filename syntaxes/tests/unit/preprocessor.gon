@@ -11,7 +11,7 @@
 #include path/to/file.gon
 // <- punctuation.definition.directive.include.gon
 // <-------- keyword.control.directive.gon
-//       ^^^^^^^^^^^^^^^^ string.unquoted.include-path.gon
+//       ^^^^^^^^^^^^^^^^ string.unquoted.include.gon
 // <------------------------ meta.preprocessor.include.gon
 
 #define macro
@@ -19,6 +19,8 @@
 // <------- keyword.control.directive.macro.gon
 //      ^^^^^ entity.name.function.gon
     key value
+//  ^^^ string.unquoted.plain.gon
+//      ^^^^^ string.unquoted.plain.gon
 #end
 // <- punctuation.definition.directive.gon
 // <---- keyword.control.directive.end.gon
@@ -27,6 +29,7 @@
 // <- punctuation.definition.directive.gon
 // <------- keyword.control.directive.macro.gon
 //      ^^^^^ entity.name.function.gon
+//            ^^^^ string.unquoted.plain.gon
 //                 ^ punctuation.definition.directive.gon
 //                 ^^^^ keyword.control.directive.end.gon
 
@@ -50,6 +53,24 @@
 //            ^^^^^ variable.parameter.gon
 //                  ^^^^ variable.parameter.gon
 //                      ^ punctuation.section.parameters.end.bracket.round.gon
+#end
+// <- punctuation.definition.directive.gon
+// <---- keyword.control.directive.end.gon
+
+#define // i'm a comment
+// <- punctuation.definition.directive.gon
+// <------- keyword.control.directive.macro.gon
+/* another comment */ macro
+//                    ^^^^^ entity.name.function.gon
+(
+// <- punctuation.section.parameters.begin.bracket.round.gon
+    /**/marco,
+//      ^^^^^ variable.parameter.gon
+    polo//
+//  ^^^^ variable.parameter.gon
+)  body
+// ^^^^ string.unquoted.plain.gon
+// <- punctuation.section.parameters.end.bracket.round.gon
 #end
 // <- punctuation.definition.directive.gon
 // <---- keyword.control.directive.end.gon

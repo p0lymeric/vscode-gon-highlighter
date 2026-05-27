@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.0.4] - 2026-05-xx
+Version 2.0.4 ...
+
+- Fix the following highlight cases.
+    - Allow `#define` name and argument lists to span multiple lines.
+
 ## [2.0.3] - 2026-05-25
 Version 2.0.3 fixes some small highlighting issues and adds some syntax checks.
 
