@@ -18,18 +18,18 @@
         { "include": "#keyvalue" }
     ],
 
+    "comment": [
+        "Fusion[1] is just a cheap[2] tactic[3] to make weak Gems[4] stronger[5]!",
+
+        "[1] fusing regular expression matchers",
+        "[2] suitable for Era 1 computers (~2004), still conventional in Era 2 (~2026)",
+        "[3] classy Gems wish to write grammars in an EBNF-like format, but alas, the Diamonds killed R&D on the initiative[6]",
+        "[4] sp. Oniguruma, of Ruby fame (though some say her unaugmented powers already extend beyond Type-3 class)",
+        "[5] typically from Type-3 to Type-2/1",
+        "[6] see: https://github.com/microsoft/vscode/pull/161479"
+    ],
+
     "repository": {
-        "comment": [
-            "Fusion[1] is just a cheap[2] tactic[3] to make weak Gems[4] stronger[5]!",
-
-            "[1] fusing regular expression matchers",
-            "[2] suitable for Era 1 computers (~2004), still conventional in Era 2 (~2026)",
-            "[3] classy Gems wish to write grammars in an EBNF-like format, but alas, the Diamonds killed R&D on the initiative[6]",
-            "[4] sp. Oniguruma, of Ruby fame (though some say her unaugmented powers already extend beyond Type-3 class)",
-            "[5] typically from Type-3 to Type-2/1",
-            "[6] see: https://github.com/microsoft/vscode/pull/161479"
-        ],
-
         "preprocessor_include": {
             "begin": "((#)(include))\\b\\s*",
             "beginCaptures": {
@@ -81,7 +81,7 @@
                     },
                     "comment": "Hash comments are actually eaten by the GON parser, not the preprocessor",
                     "comment2": "(the # sigil can either be interpreted as a macro use directive or passed through to GON)",
-                    "comment3": "TODO need to reject GON comments in some preprocessor contexts",
+                    "comment3": "We give identical highlighting precedence to GON and preprocessor comments for simpicity.",
                     "name": "comment.line.number-sign.gon"
                 }
             ]
@@ -153,6 +153,7 @@
             "end": "$",
             "name": "meta.preprocessor.macro.gon",
             "patterns": [
+                { "include": "#preprocessor_comment" },
                 { "include": "#value" }
             ]
         },
@@ -207,6 +208,7 @@
             },
             "name": "meta.structure.array.gon",
             "patterns": [
+                { "include": "#preprocessor" },
                 { "include": "#value" }
             ]
         },
@@ -258,8 +260,8 @@
                     ]
                 }
             },
-            "comment2": "If a value is a quoted string that spans multiple lines, it will fail to parse correctly.",
-            "comment3": "(keys can span multiple lines by sheer coincidence of being parsed as two keyvalues)",
+            "comment": "If a value is a quoted string that spans multiple lines, it will fail to parse correctly.",
+            "comment2": "(keys can span multiple lines by sheer coincidence of being parsed as two keyvalues)",
             "end": "(?<=[\"\\}\\]])(?=\\s|$|[,\\}\\]]|//|/\\*|#)|(?<=[^\\s\\[\\]{}\"#,=:])(?<!\\*/)(?=\\s|$|[,\\}\\]]|//|/\\*)",
             "patterns": [
                 { "include": "#value" }
@@ -274,8 +276,10 @@
             ]
         },
         "value": {
+            "comment": "#include and macro invocations in a value position are assumed to have odd parity",
             "patterns": [
-                { "include": "#preprocessor" },
+                { "include": "#preprocessor_include" },
+                { "include": "#preprocessor_macro" },
                 { "include": "#constant" },
                 { "include": "#number" },
                 { "include": "#string" },

@@ -175,6 +175,8 @@ export function startServer(connection: Connection, documents: TextDocuments<Tex
                             tokenEnd(node.left);
             case 'pp_define': return node.end_word ? tokenEnd(node.end_word) :
                                 node.body.length ? nodeEndOffset(node.body[node.body.length - 1]) :
+                                node.params.length ? tokenEnd(node.params[node.params.length - 1]) :
+                                node.name ? tokenEnd(node.name) :
                                 tokenEnd(node.word);
         }
     }

@@ -48,7 +48,7 @@ export function activate(context: ExtensionContext) {
 
     const serverOptions: ServerOptions = {
         run: { module: serverModule, transport: TransportKind.ipc },
-        debug: { module: serverModule, transport: TransportKind.ipc, }
+        debug: { module: serverModule, transport: TransportKind.ipc }
     };
 
     const clientOptions: LanguageClientOptions = {
@@ -59,8 +59,8 @@ export function activate(context: ExtensionContext) {
         ],
         // possibly only needed if we later add macro expansion support
         // synchronize: {
-        // 	// Notify the server about file changes to GON files contained in the workspace
-        // 	fileEvents: workspace.createFileSystemWatcher('**/*.{gon,gon.append,gon.merge,gon.patch}')
+        //     // Notify the server about file changes to GON files contained in the workspace
+        //     fileEvents: workspace.createFileSystemWatcher('**/*.{gon,gon.append,gon.merge,gon.patch}')
         // }
     };
 

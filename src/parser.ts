@@ -48,6 +48,7 @@ export function parse(tokens: Token[], text: string): { cst: CstNode[], diags: D
         return at(kind) ? consume() : null;
     }
     function skip_ignored(): void {
+        // TODO should report if GonHashComment is in a bad place (#define, #include, or on a macro invocation)
         while(at(
             TokenKind.PreprocDoubleSlashComment, TokenKind.PreprocSlashStarComment,
             TokenKind.GonHashComment,
@@ -128,7 +129,13 @@ export function parse(tokens: Token[], text: string): { cst: CstNode[], diags: D
             if(at(TokenKind.MetaEof, TokenKind.LitRSquare, TokenKind.LitRCurly)) {
                 break;
             }
-            elements.push(parse_value());
+            if(at(TokenKind.PreprocLitWordDefine)) {
+                elements.push(parse_define());
+            } else if(at(TokenKind.PreprocLitWordEnd)) {
+                elements.push(parse_dangling_end());
+            } else {
+                elements.push(parse_value());
+            }
         }
         const right = eat(TokenKind.LitRSquare);
         if (!right) {
@@ -154,6 +161,12 @@ export function parse(tokens: Token[], text: string): { cst: CstNode[], diags: D
             error(left, "Unclosed '{': no matching '}'");
         }
         return { kind: "object", left, elements, right };
+    }
+
+    function parse_dangling_end(): Extract<CstNode, { kind: "meta_bad" }> {
+        const token = consume();
+        error(token, "'#end' without matching '#define'");
+        return { kind: "meta_bad", token };
     }
 
     function parse_define(): Extract<CstNode, { kind: "pp_define" }> {
@@ -198,9 +211,7 @@ export function parse(tokens: Token[], text: string): { cst: CstNode[], diags: D
             return parse_pp_macro();
         }
         if(at(TokenKind.PreprocLitWordEnd)) {
-            const token = consume();
-            error(token, "'#end' without matching '#define'");
-            return { kind: "meta_bad", token };
+            return parse_dangling_end();
         }
         if(at(TokenKind.Quoted, TokenKind.Unquoted)) {
             const key = consume();

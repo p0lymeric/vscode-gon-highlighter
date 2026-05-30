@@ -79,3 +79,71 @@
 // <- punctuation.definition.directive.gon
 // <----- keyword.control.directive.macro.gon
 //    ^^^^^^^^^^^^^ meta.preprocessor.macro.gon
+
+key {
+    #include "stuff.gon" // here's my stuff
+//  ^ punctuation.definition.directive.include.gon
+//   ^^^^^^^ keyword.control.directive.gon
+//           ^ punctuation.definition.string.begin.gon
+//            ^^^^^^^^^ string.quoted.double.include.gon
+//                     ^ punctuation.definition.string.end.gon
+//  ^^^^^^^^^^^^^^^^^^^^ meta.preprocessor.include.gon
+    #define helper(a b c) /* numbers are on the fridge */
+//  ^ punctuation.definition.directive.gon
+//   ^^^^^^ keyword.control.directive.macro.gon
+//          ^^^^^^ entity.name.function.gon
+//                ^ punctuation.section.parameters.begin.bracket.round.gon
+//                 ^ variable.parameter.gon
+//                   ^ variable.parameter.gon
+//                     ^ variable.parameter.gon
+//                      ^ punctuation.section.parameters.end.bracket.round.gon
+        #nested a
+//      ^ punctuation.definition.directive.gon
+//       ^^^^^^ keyword.control.directive.macro.gon
+//      ^^^^^^^^^ meta.preprocessor.macro.gon
+        b # i really like comments
+//      ^ string.unquoted.plain.gon
+        c
+//      ^ string.unquoted.plain.gon
+    #end
+//  ^ punctuation.definition.directive.gon
+//  ^^^^ keyword.control.directive.end.gon
+    #helper rest of line
+//  ^ punctuation.definition.directive.gon
+//  ^^^^^^^ keyword.control.directive.macro.gon
+//  ^^^^^^^^^^^^^^^^^^^^ meta.preprocessor.macro.gon
+}
+
+key [
+    #include "stuff.gon" // here's my stuff
+//  ^ punctuation.definition.directive.include.gon
+//   ^^^^^^^ keyword.control.directive.gon
+//           ^ punctuation.definition.string.begin.gon
+//            ^^^^^^^^^ string.quoted.double.include.gon
+//                     ^ punctuation.definition.string.end.gon
+//  ^^^^^^^^^^^^^^^^^^^^ meta.preprocessor.include.gon
+    #define helper(a b c) /* numbers are on the fridge */
+//  ^ punctuation.definition.directive.gon
+//   ^^^^^^ keyword.control.directive.macro.gon
+//          ^^^^^^ entity.name.function.gon
+//                ^ punctuation.section.parameters.begin.bracket.round.gon
+//                 ^ variable.parameter.gon
+//                   ^ variable.parameter.gon
+//                     ^ variable.parameter.gon
+//                      ^ punctuation.section.parameters.end.bracket.round.gon
+        #nested a
+//      ^ punctuation.definition.directive.gon
+//       ^^^^^^ keyword.control.directive.macro.gon
+//      ^^^^^^^^^ meta.preprocessor.macro.gon
+        b # i really like comments
+//      ^ string.unquoted.plain.gon
+        c
+//      ^ string.unquoted.plain.gon
+    #end
+//  ^ punctuation.definition.directive.gon
+//  ^^^^ keyword.control.directive.end.gon
+    #helper rest of line
+//  ^ punctuation.definition.directive.gon
+//  ^^^^^^^ keyword.control.directive.macro.gon
+//  ^^^^^^^^^^^^^^^^^^^^ meta.preprocessor.macro.gon
+]
